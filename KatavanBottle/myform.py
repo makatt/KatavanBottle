@@ -21,7 +21,7 @@ def my_form():
         return "Error: Invalid email format"
     
     ###
-    questions[email] = question
+    questions[email] = [username, question]
     pdb.set_trace()
     
     # 7.3. Получаем текущую дату
