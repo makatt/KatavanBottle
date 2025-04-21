@@ -1,37 +1,61 @@
 ﻿from bottle import post, request, response
 import re
+import json
 from datetime import datetime
-import pdb
+import os
 
-questions = {}
+JSON_FILE = 'questions.json'
+
+def load_data():
+    
+    try:
+        with open(JSON_FILE, 'r', encoding='utf-8') as f:
+            return json.load(f)
+    except (json.JSONDecodeError, FileNotFoundError):
+        return {}
+
+def save_data(data):
+
+    with open(JSON_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 @post('/home', method='post')
 def my_form():
     email = request.forms.get('ADRESS')
     question = request.forms.get('QUEST')
-    username = request.forms.get('USERNAME') 
+    username = request.forms.get('USERNAME')
     
-    # 7.4. Проверка заполненности полей
     if not all([email, question, username]):
-        return "Error: Please fill in all fields"
+        return "Ошибка: Пожалуйста, заполните все поля"
     
-    # 7.1. Проверка формата email
     email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
     if not re.match(email_pattern, email):
-        return "Error: Invalid email format"
+        return "Ошибка: Неправильный формат email"
     
-    ###
-    questions[email] = [username, question]
-    pdb.set_trace()
+    if len(question.strip()) <= 3:
+        return "Ошибка: Вопрос должен содержать более 3 символов"
+    if question.strip().isdigit():
+        return "Ошибка: Вопрос не может состоять только из цифр"
     
-    # 7.3. Получаем текущую дату
+    data = load_data()
+    
+    if email in data:
+        if question not in data[email]['questions']:
+            data[email]['questions'].append(question)
+        else:
+            return "Ошибка: Такой вопрос уже был задан ранее"
+    else:
+        data[email] = {
+            'username': username,
+            'questions': [question],
+            'first_access': datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    
+    save_data(data)
+    
     current_date = datetime.now().strftime("%Y-%m-%d")
-    
-    # 7.2. Формируем ответ с именем пользователя и датой
     return f"""
-    Thanks, {username}! 
-    The answer will be sent to the mail: {email}
-    Access Date: {current_date}
+    Спасибо, {username}! 
+    Ответ будет отправлен на почту: {email}
+    Дата обращения: {current_date}
     """
-
-    
