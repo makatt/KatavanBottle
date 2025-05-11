@@ -36,6 +36,8 @@ def my_form():
         return "Ошибка: Вопрос должен содержать более 3 символов"
     if question.strip().isdigit():
         return "Ошибка: Вопрос не может состоять только из цифр"
+    if not re.search(r'[a-zA-Zа-яА-Я0-9]', question):
+        return "Ошибка: Вопрос не может состоять только из символов"
     
     data = load_data()
     
