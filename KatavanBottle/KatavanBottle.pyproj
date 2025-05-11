@@ -34,11 +34,20 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="app.py" />
+    <Compile Include="calc.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="myform.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="routes.py" />
     <Compile Include="test_1.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="test_calc.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="utest_calc.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
